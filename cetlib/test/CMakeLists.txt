@@ -1,5 +1,6 @@
 include(CetTest)
 cet_enable_asserts()
+cet_test_env("LC_ALL=en_US.utf8")
 
 set(THREADS_PREFER_PTHREAD_FLAG TRUE)
 
@@ -237,9 +238,9 @@ if (CMAKE_CXX_STANDARD GREATER_EQUAL 20)
   set_property(TARGET bad_reg_via_id_t bad_reg_via_id_t_2 APPEND PROPERTY
     COMPILE_OPTIONS "$<$<COMPILE_LANGUAGE:CXX>:-fconcepts-diagnostics-depth=2>")
   set_property(TEST bad_reg_via_id_t PROPERTY
-    PASS_REGULAR_EXPRESSION "error: .*struct thing.* has no member named .*id.*")
+    PASS_REGULAR_EXPRESSION "error: ‘struct thing’ has no member named ‘id’")
   set_property(TEST bad_reg_via_id_t_2 PROPERTY
-    PASS_REGULAR_EXPRESSION "note: the expression .*is_same_v<_Tp, _Up> \\[with _Tp = float; _Up = char\\].* evaluated to .*false.*")
+    PASS_REGULAR_EXPRESSION "note: the expression ‘is_same_v<_Tp, _Up> \\[with _Tp = float; _Up = char\\]’ evaluated to ‘false’")
 else()
   set_tests_properties(bad_reg_via_id_t bad_reg_via_id_t_2
     PROPERTIES WILL_FAIL TRUE)
