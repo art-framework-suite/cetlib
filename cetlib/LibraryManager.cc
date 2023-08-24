@@ -1,7 +1,5 @@
 #include "cetlib/LibraryManager.h"
 
-#include "boost/filesystem.hpp"
-#include "boost/regex.hpp"
 #include "cetlib/container_algorithms.h"
 #include "cetlib/detail/plugin_search_path.h"
 #include "cetlib/plugin_libpath.h"
@@ -10,14 +8,19 @@
 #include "cetlib_except/demangle.h"
 #include "cetlib_except/exception.h"
 
+#include "boost/regex.hpp"
+
 extern "C" {
 #include <dlfcn.h>
 }
 
 #include <algorithm>
+#include <filesystem>
 #include <iterator>
 #include <sstream>
 #include <vector>
+
+namespace fs = std::filesystem;
 
 namespace {
   std::string const default_pattern_stem{"(?:[A-Za-z0-9\\-]*_)*[A-Za-z0-9]+_"};
@@ -154,7 +157,7 @@ cet::LibraryManager::libraryIsLoadable(std::string const& path) const
 void
 cet::LibraryManager::lib_loc_map_inserter(std::string const& path)
 {
-  lib_loc_map_[boost::filesystem::path(path).filename().native()] = path;
+  lib_loc_map_[fs::path(path).filename().native()] = path;
 }
 
 void

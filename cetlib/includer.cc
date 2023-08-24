@@ -7,19 +7,19 @@
 // =====================================================================
 #include "cetlib/includer.h"
 
-#include "boost/filesystem.hpp"
 #include "cetlib/filepath_maker.h"
 #include "cetlib/split_by_regex.h"
 #include "cetlib/trim.h"
 #include "cetlib_except/coded_exception.h"
 
 #include <algorithm>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 
 using cet::includer;
 
-namespace bfs = boost::filesystem;
+namespace fs = std::filesystem;
 
 // ----------------------------------------------------------------------
 
@@ -77,10 +77,10 @@ namespace {
   std::string
   canonicalizePath(std::string const& path_str)
   try {
-    bfs::path path{path_str};
+    fs::path path{path_str};
     // If specified path does not exist, complain later.
-    if (bfs::exists(path)) {
-      path = bfs::canonical(path);
+    if (fs::exists(path)) {
+      path = fs::canonical(path);
     }
     std::string result = path.native();
     return result;
