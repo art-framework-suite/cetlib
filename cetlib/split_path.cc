@@ -8,12 +8,19 @@
 #include "cetlib/split_path.h"
 
 #include "boost/algorithm/string.hpp"
+#include <ranges>
 
 void
 cet::split_path(std::string const& path, std::vector<std::string>& components)
 {
-  if (path.empty())
+  if (path.empty()){
     components.clear();
-  else
-    boost::algorithm::split(components, path, boost::algorithm::is_any_of(":"));
+  }else{
+    auto split_path = path | std::views::split(':');
+
+    for (auto &&item : split_path){
+      components.emplace_back(item.begin(), item.end());
+    }
+  }
+    // boost::algorithm::split(components, path, boost::algorithm::is_any_of(":"));
 }

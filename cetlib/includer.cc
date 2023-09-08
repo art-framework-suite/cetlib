@@ -16,6 +16,7 @@
 #include <algorithm>
 #include <fstream>
 #include <iostream>
+#include <ranges>
 
 using cet::includer;
 
@@ -24,8 +25,8 @@ namespace bfs = boost::filesystem;
 // ----------------------------------------------------------------------
 
 namespace {
-  std::regex const reCarriageReturn{"\r"};
-
+  // std::regex const reCarriageReturn{"\r"};
+  constexpr auto reCarriageReturn = "\r";
   namespace detail {
     enum error { cant_open, cant_read, malformed, recursive };
 
@@ -63,10 +64,11 @@ namespace {
     getlines(std::istream& is)
     {
       std::vector<std::string> result;
-      for (std::string readline; std::getline(is, readline);) {
-        for (auto const& line :
-             cet::split_by_regex(readline, reCarriageReturn)) {
-          result.emplace_back(line);
+      std::string readline;
+      while(std::getline(is, readline)){
+        auto lines = std::views::split(readline, reCarriageReturn);
+        for (auto& line : lines){
+          result.emplace_back(line.begin(), line.end());
         }
       }
       return result;

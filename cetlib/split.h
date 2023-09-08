@@ -16,9 +16,9 @@
 //
 // ======================================================================
 
-#include <algorithm>
 #include <functional>
 #include <string>
+#include <ranges>
 
 namespace cet {
   template <class OutIter>
@@ -47,7 +47,7 @@ cet::split_if(std::string const& s, Pred is_sep, OutIter dest)
   auto const e = s.cend();
   auto const is_not_sep = [is_sep](auto const c) { return !is_sep(c); };
   auto const new_boi = [is_not_sep, &e](auto const si) {
-    return std::find_if(si, e, is_not_sep);
+    return std::ranges::find_if(si, e, is_not_sep);
   };
   // invariant:  we've found all items in [b..boi)
   // e is an arbitrary value to use as the initializer
@@ -57,7 +57,7 @@ cet::split_if(std::string const& s, Pred is_sep, OutIter dest)
        boi = new_boi(eoi)) // advance to next non-separator
   {
     // find end of current item:
-    eoi = std::find_if(boi, e, is_sep);
+    eoi = std::ranges::find_if(boi, e, is_sep);
 
     // copy the item formed from characters in [boi..eoi):
     *dest = std::string(boi, eoi);

@@ -10,6 +10,7 @@
 
 #include <string>
 #include <vector>
+#include <ranges>
 
 namespace cet {
   void split_path(std::string const& path,
