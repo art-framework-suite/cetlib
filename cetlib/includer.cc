@@ -66,8 +66,9 @@ namespace {
       std::vector<std::string> result;
       std::string readline;
       while(std::getline(is, readline)){
-        auto lines = std::views::split(readline, reCarriageReturn);
-        for (auto& line : lines){
+        std::string_view rl{readline};
+        auto lines = std::views::split(readline, rl);
+        for (auto line : lines){
           result.emplace_back(line.begin(), line.end());
         }
       }
