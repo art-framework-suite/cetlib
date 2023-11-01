@@ -68,10 +68,14 @@ FILEPATH_MAKER_TEST_FILES=${CMAKE_CURRENT_SOURCE_DIR}/filepath_maker-files"
   TEST_WORKDIR "${CMAKE_CURRENT_SOURCE_DIR}"
   LIBRARIES PRIVATE cetlib::cetlib)
 
-cet_test(inc-expand_test.sh PREBUILT DEPENDENCIES inc-expand)
+cet_test(inc-expand_test.sh PREBUILT
+  TEST_ARGS $<TARGET_FILE:inc-expand>
+  DEPENDENCIES inc-expand)
 
 cet_make_exec(NAME search_path_test_2 NO_INSTALL)
-cet_test(search_path_test_2.sh PREBUILT DEPENDENCIES search_path_test_2)
+cet_test(search_path_test_2.sh PREBUILT
+  TEST_ARGS $<TARGET_FILE:search_path_test_2>
+  DEPENDENCIES search_path_test_2)
 
 cet_test(sha1_test_2 SOURCE sha1_test_2.cc sha1.cpp)
 cet_test(sha1_test_performance SOURCE sha1_test_performance.cc sha1.cpp)
@@ -136,7 +140,9 @@ basic_plugin(TestPlugin "plugin" NO_INSTALL
 
 # Use default Plugin lookup
 cet_test(PluginFactory_t USE_BOOST_UNIT
-  LIBRARIES PRIVATE cetlib_test::TestPluginBase cetlib::cetlib)
+  LIBRARIES PRIVATE cetlib_test::TestPluginBase cetlib::cetlib
+  TEST_PROPERTIES ENVIRONMENT
+  CET_PLUGIN_PATH=$<TARGET_FILE_DIR:cetlib_test::TestPlugin_plugin>)
 
 # Use custom Plugin lookup
 cet_test(PluginFactoryCustomSearchPath_t USE_BOOST_UNIT
@@ -170,6 +176,7 @@ cet_test(LibraryManager_t USE_BOOST_UNIT
   LIBRARIES PRIVATE
     cetlib::cetlib
     ${CMAKE_DL_LIBS}
+  TEST_PROPERTIES ENVIRONMENT CET_PLUGIN_PATH=$<TARGET_FILE_DIR:1_1_1_cetlibtest>
 )
 
 # Use custom library search path
@@ -184,8 +191,13 @@ target_compile_definitions(LibraryManagerCustomSearchPath_t
   PRIVATE LIBRARY_MANAGER_SEARCH_PATH=1)
 
 cet_test(replace_all_test USE_BOOST_UNIT LIBRARIES PRIVATE cetlib::cetlib)
+
+# We define an empty LD_LIBRARY_PATH env. variable to prevent an
+# exception throw from the LibraryManager
 cet_test(regex_t USE_BOOST_UNIT LIBRARIES PRIVATE cetlib::cetlib
-  TEST_WORKDIR ${CMAKE_CURRENT_SOURCE_DIR})
+  TEST_WORKDIR ${CMAKE_CURRENT_SOURCE_DIR}
+  TEST_PROPERTIES ENVIRONMENT LD_LIBRARY_PATH=)
+
 cet_test(regex_standalone_t SOURCE regex_t.cc
   TEST_WORKDIR ${CMAKE_CURRENT_SOURCE_DIR})
 
