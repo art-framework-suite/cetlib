@@ -247,7 +247,7 @@ endif()
 
 foreach (compile_test IN ITEMS
     bad_reg_via_id_t bad_reg_via_id_t_2)
-  cet_test(${compile_test} COMPILE_ONLY)
+  cet_test(${compile_test} COMPILE_ONLY LIBRARIES PRIVATE cetlib_except::cetlib_except)
 endforeach()
 if (CMAKE_CXX_STANDARD GREATER_EQUAL 20)
   set_property(TARGET bad_reg_via_id_t bad_reg_via_id_t_2 APPEND PROPERTY
