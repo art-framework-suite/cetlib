@@ -34,7 +34,8 @@ cet::sqlite::Transaction::~Transaction() noexcept
   // an error message.
   if (db_) {
     sqlite3_exec(db_, "ROLLBACK;", nullptr, nullptr, nullptr);
-    std::cerr << "Transaction d'tor called before commit was called.\n";
+    std::cerr << "Transaction d'tor called before commit was called.\n"
+              << "The associated SQLite database may be full.\n";
   }
 }
 

@@ -68,6 +68,13 @@
 // immediately thereafter.  The Ntuple d'tor automatically calls flush
 // whenever the Ntuple object goes out of scope.
 //
+// Filling the disk (or database)
+// ------------------------------
+//
+// Each time data are flushed, it is possible that the associated SQLite
+// database might get "full". If this happens, the Ntuple stops collecting
+// new data; the 'insert' function becomes a no-op, as does 'flush'.
+//
 // Examples of use
 // ---------------
 //
@@ -153,8 +160,18 @@ namespace cet::sqlite {
     {
       return name_;
     }
+
+    // insert a new record into the buffer. If the buffer becomes full,
+    // flush() is called internally. If the database becomes full further
+    // calls to insert() become a no-op.
     void insert(Args const...);
+
+    // flush() inserts the buffered records into the controlled database.
+    // If the database becomes full further calls to flush() become a no-op.
     void flush();
+
+    bool full() const;
+
     // Implementation details
   private:
     static constexpr auto iSequence = std::make_index_sequence<nColumns>();
@@ -177,6 +194,7 @@ namespace cet::sqlite {
     std::size_t const max_;
     std::vector<row_t> buffer_{};
     sqlite3_stmt* insert_statement_{nullptr};
+    bool full_{false};
   };
 
 } // cet::sqlite
@@ -229,6 +247,9 @@ void
 cet::sqlite::Ntuple<Args...>::insert(Args const... args)
 {
   std::lock_guard sentry{mutex_};
+  if (full_)
+    return;
+
   if (buffer_.size() == max_) {
     flush();
   }
@@ -242,13 +263,53 @@ cet::sqlite::Ntuple<Args...>::flush_no_throw()
   // Guard against any modifications to the buffer, which is about to
   // be flushed to the database.
   std::lock_guard sentry{mutex_};
-  int const rc{
-    connection_.flush_no_throw<nColumns>(buffer_, insert_statement_)};
-  if (rc != SQLITE_DONE) {
-    return rc;
+
+  // If the database is full, do nothing and pretend all is well.
+  if (full_)
+    return SQLITE_OK;
+
+  int rc = -1;
+  try {
+    // Despite the name, Connection::flush_no_throw() can throw. This can
+    // happen, for example, if the binding of a parameter to the SQLite
+    // statement for the insertion fails.
+    rc = connection_.flush_no_throw<nColumns>(buffer_, insert_statement_);
   }
-  buffer_.clear();
-  return SQLITE_OK;
+  catch (Exception const& exc) {
+    std::string msg = exc.what();
+    // Detect the magic number 13, which is the value of
+    // SQLITE_FULL.
+    // TODO: when we get to rely on C++20, this can be done
+    // with
+    //     msg.ends_with("13")
+    // rather than this mess.
+    if ((msg.size() > 3) && (msg.substr(msg.size() - 2) == "13")) {
+      rc = SQLITE_FULL;
+    } else {
+      rc = SQLITE_ERROR;
+    }
+  }
+  catch (...) {
+    rc = SQLITE_ERROR;
+  }
+
+  switch (rc) {
+  case SQLITE_FULL:
+    buffer_.clear();
+    full_ = true;
+    // We'll pretend all is well...
+    return SQLITE_OK;
+  case SQLITE_DONE:
+    buffer_.clear();
+    return SQLITE_OK;
+  default:
+    // We have encountered some sort of error,
+    // other than SQLITE_FULL.
+    break;
+  }
+  // We will only get here if we encountered an error other than
+  // SQLITE_FULL.
+  return rc;
 }
 
 template <typename... Args>
@@ -260,6 +321,13 @@ cet::sqlite::Ntuple<Args...>::flush()
     throw sqlite::Exception{sqlite::errors::SQLExecutionError}
       << "SQLite step failure while flushing.";
   }
+}
+
+template <typename... Args>
+bool
+cet::sqlite::Ntuple<Args...>::full() const
+{
+  return full_;
 }
 
 #endif /* cetlib_sqlite_Ntuple_h */

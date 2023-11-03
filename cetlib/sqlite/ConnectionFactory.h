@@ -32,10 +32,10 @@
 #include "cetlib/sqlite/Connection.h"
 #include "cetlib/sqlite/detail/DefaultDatabaseOpenPolicy.h"
 
-#include <map>
 #include <memory>
 #include <mutex>
 #include <string>
+#include <unordered_map>
 #include <utility>
 
 namespace cet::sqlite {
@@ -45,17 +45,19 @@ namespace cet::sqlite {
     template <typename DatabaseOpenPolicy = detail::DefaultDatabaseOpenPolicy,
               typename... PolicyArgs>
     auto make_connection(std::string const& file_name, PolicyArgs&&...)
-      -> Connection*;
+      -> std::unique_ptr<Connection>;
 
   private:
-    std::map<std::string, std::weak_ptr<std::recursive_mutex>> databaseLocks_;
+    std::unordered_map<std::string, std::weak_ptr<std::recursive_mutex>>
+      databaseLocks_;
     std::recursive_mutex mutex_;
   };
 
   template <typename DatabaseOpenPolicy, typename... PolicyArgs>
   auto
   ConnectionFactory::make_connection(std::string const& filename,
-                                     PolicyArgs&&... policyArgs) -> Connection*
+                                     PolicyArgs&&... policyArgs)
+    -> std::unique_ptr<Connection>
   {
     // Implementation a la Herb Sutter's favorite 10-liner
     std::lock_guard sentry{mutex_};
@@ -67,11 +69,16 @@ namespace cet::sqlite {
       databaseLocks_[filename] = shared_ptr_to_mutex =
         std::make_shared<std::recursive_mutex>();
     }
-    auto ret = new Connection{
+
+    // We can not just call std::make_unique<Connection>(...) because the
+    // constructor for Connection we need to call is private, and make_unique
+    //  is not a friend... and the syntax for making the right function template
+    //  be a friend is non-obvious.
+    Connection* pc = new Connection(
       filename,
       shared_ptr_to_mutex,
-      DatabaseOpenPolicy{std::forward<PolicyArgs>(policyArgs)...}};
-    return ret;
+      DatabaseOpenPolicy{std::forward<PolicyArgs>(policyArgs)...});
+    return std::unique_ptr<Connection>(pc);
   }
 
 } // namespace cet::sqlite

@@ -73,6 +73,9 @@ cet_make_library(HEADERS_TARGET
 if(NOT APPLE)
   find_package(OpenSSL REQUIRED EXPORT)
   target_link_libraries(cetlib PUBLIC OpenSSL::Crypto)
+  if(OPENSSL_VERSION VERSION_GREATER_EQUAL 3.0)
+    target_compile_definitions(cetlib PUBLIC OPENSSL_API_COMPAT=0x10100000L)
+  endif()
 endif()
 
 cet_make_library(LIBRARY_NAME compiler_macros INTERFACE

@@ -26,8 +26,8 @@ test_with_new_database(Connection& c)
 {
   cout << "start test_with_new_database\n";
   assert(c);
-  Ntuple<double, std::string> xx{c, "xx", {{"x", "txt"}}};
-  std::cout << "end test_with_new_database\n";
+  Ntuple<double, string> xx{c, "xx", {{"x", "txt"}}};
+  cout << "end test_with_new_database\n";
 }
 
 void
@@ -35,8 +35,8 @@ test_with_matching_table(Connection& c)
 {
   cout << "start test_with_matching_table\n";
   assert(c);
-  Ntuple<double, std::string> xx{c, "xx", {{"x", "txt"}}};
-  std::cout << "end test_with_matching_table\n";
+  Ntuple<double, string> xx{c, "xx", {{"x", "txt"}}};
+  cout << "end test_with_matching_table\n";
 }
 
 template <class... ARGS>
@@ -56,16 +56,6 @@ test_with_colliding_table(Connection& c,
     assert("Threw wrong exception for mismatched table" == nullptr);
   }
   cout << "end test_with_colliding_table\n";
-}
-
-int
-count_rows(void* p, int nrows, char** results, char** cnames)
-{
-  auto n = static_cast<int*>(p);
-  assert(nrows == 1);
-  assert(strcmp(cnames[0], "count(*)") == 0);
-  *n = stoi(results[0]);
-  return 0;
 }
 
 void
@@ -101,7 +91,7 @@ test_parallel_filling_table(Connection& c)
                            {{"i", "x"}},
                            true,
                            60}; // Force flushing after 60 insertions.
-    std::vector<std::function<void()>> tasks;
+    vector<function<void()>> tasks;
     for (unsigned i{}; i < nthreads; ++i) {
       tasks.emplace_back([i, &nt] {
         for (unsigned j{}; j < nrows_per_thread; ++j) {
@@ -133,18 +123,66 @@ test_column_constraint(Connection& c)
 void
 test_file_create(ConnectionFactory& cf)
 {
+  cout << "start test_file_create\n";
   string const filename{"myfile.db"};
   remove(filename.c_str());
   unique_ptr<Connection> c{cf.make_connection(filename)};
   {
     Ntuple<int, double, int> table{*c, "tab1", {{"i", "x", "k"}}, false, 5};
-    for (std::size_t i = 0; i < 103; ++i) {
+    for (size_t i = 0; i < 103; ++i) {
       table.insert(i, 0.5 * i, i * i);
     }
   }
   query_result<int> cnt;
   cnt << select("count(*)").from(*c, "tab1");
   assert(unique_value(cnt) == 103);
+  cout << "end test_file_create\n";
+}
+
+void
+test_filling_database(ConnectionFactory& cf)
+{
+  cout << "start test_filling_database\n";
+  // Create a connection for a new database with a small maximum page count.
+  string filename = "database_for_testing_full_ntuple.db";
+  remove(filename.c_str());
+  auto c = cf.make_connection(filename);
+  char* errmsg = nullptr;
+  int rc =
+    sqlite3_exec(*c, "PRAGMA main.max_page_count=2", nullptr, nullptr, &errmsg);
+  if (rc != SQLITE_OK) {
+    sqlite3_free(errmsg);
+    cerr << "Failed to reset max_page_count\n";
+    abort();
+  }
+
+  // Create an Ntuple with forced flushing on every insert.
+  Ntuple<int, double> table{*c, "silly", {{"k", "x"}}};
+  // max_rows is the maximum number of rows that can be inserted into a
+  // database with the max_page_count of 2. This was determined under
+  // SQLite version 3.40.1.
+  size_t const max_rows = 247;
+  for (size_t i = 0; i < max_rows; ++i) {
+    table.insert(10, 1.5);
+    table.flush();
+    assert(not table.full());
+  }
+  // We should now have max_rows elements in the table.
+  query_result<int> nmatches;
+  nmatches << select("count(*)").from(*c, "silly");
+  assert(unique_value(nmatches) == max_rows);
+
+  // The database should now be full. The next insert should not insert new
+  // data. It should also set 'full' to true. And we should still have max_rows
+  // elements in the table.
+  cout << "Inserting final record\n";
+  table.insert(20, 2.5);
+  table.flush();
+  assert(table.full());
+  nmatches << select("count(*)").from(*c, "silly");
+  assert(unique_value(nmatches) == max_rows);
+
+  cout << "end test_filling_database\n";
 }
 
 int
@@ -169,12 +207,13 @@ try {
   test_parallel_filling_table(*c);
   test_column_constraint(*c);
   test_file_create(cf);
+  test_filling_database(cf);
 }
-catch (std::exception const& x) {
-  std::cout << x.what() << std::endl;
+catch (exception const& x) {
+  cout << x.what() << endl;
   return 1;
 }
 catch (...) {
-  std::cout << "Unknown exception caught\n";
+  cout << "Unknown exception caught\n";
   return 2;
 }

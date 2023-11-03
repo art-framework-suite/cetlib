@@ -254,7 +254,7 @@ boost		v1_82_0	-
 hep_concurrency	v1_09_01	-
 sqlite		v3_40_01_00	-
 catch		v3_3_2		-	only_for_build
-cetmodules	v3_21_02	-	only_for_build
+cetmodules	v3_22_02	-	only_for_build
 end_product_list
 ####################################
 

@@ -83,6 +83,13 @@ namespace cet::sqlite {
     {
       return data.end();
     }
+
+    std::size_t
+    size() const
+    {
+      return data.size();
+    }
+
     explicit operator bool() const { return !empty(); }
 
     std::vector<std::string> columns;
