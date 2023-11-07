@@ -1,12 +1,13 @@
 // vim: set sw=2 expandtab :
 
-#include "boost/filesystem.hpp"
 #include "cetlib/sqlite/ConnectionFactory.h"
 #include "cetlib/sqlite/Ntuple.h"
 #include "cetlib/sqlite/create_table.h"
 #include "hep_concurrency/simultaneous_function_spawner.h"
 
 #include <cassert>
+#include <filesystem>
+#include <functional>
 #include <iostream>
 #include <memory>
 #include <string>
@@ -15,7 +16,7 @@
 using namespace std;
 using namespace cet::sqlite;
 using namespace hep::concurrency;
-namespace bfs = boost::filesystem;
+namespace bfs = std::filesystem;
 
 int
 main()

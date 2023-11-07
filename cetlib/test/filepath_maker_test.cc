@@ -7,7 +7,7 @@
 #define BOOST_TEST_MODULE (filepath_maker test)
 #include "boost/test/unit_test.hpp"
 
-#include "boost/filesystem.hpp"
+#include <filesystem>
 #include "cetlib/filepath_maker.h"
 #include "cetlib/filesystem.h"
 #include "cetlib/getenv.h"
@@ -15,7 +15,7 @@
 
 #include <string>
 
-namespace bfs = boost::filesystem;
+namespace bfs = std::filesystem;
 using namespace std::string_literals;
 
 namespace {

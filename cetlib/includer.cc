@@ -7,7 +7,7 @@
 // =====================================================================
 #include "cetlib/includer.h"
 
-#include "boost/filesystem.hpp"
+#include <filesystem>
 #include "cetlib/filepath_maker.h"
 #include "cetlib/split_by_regex.h"
 #include "cetlib/trim.h"
@@ -19,7 +19,7 @@
 
 using cet::includer;
 
-namespace bfs = boost::filesystem;
+namespace bfs = std::filesystem;
 
 // ----------------------------------------------------------------------
 

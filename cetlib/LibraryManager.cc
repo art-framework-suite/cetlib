@@ -1,7 +1,7 @@
 #include "cetlib/LibraryManager.h"
 
-#include "boost/filesystem.hpp"
-#include "boost/regex.hpp"
+#include <filesystem>
+#include <regex>
 #include "cetlib/container_algorithms.h"
 #include "cetlib/detail/plugin_search_path.h"
 #include "cetlib/plugin_libpath.h"
@@ -154,7 +154,7 @@ cet::LibraryManager::libraryIsLoadable(std::string const& path) const
 void
 cet::LibraryManager::lib_loc_map_inserter(std::string const& path)
 {
-  lib_loc_map_[boost::filesystem::path(path).filename().native()] = path;
+  lib_loc_map_[std::filesystem::path(path).filename().native()] = path;
 }
 
 void
@@ -162,27 +162,29 @@ cet::LibraryManager::spec_trans_map_inserter(
   lib_loc_map_t::value_type const& entry)
 {
   // First obtain short spec.
-  boost::regex const e{"([^_]+)_" + lib_type_ + dllExtPattern() + '$'};
-  boost::match_results<std::string::const_iterator> match_results;
-  if (boost::regex_search(entry.first, match_results, e)) {
+  std::string e_str =
+    "([^_]+)_" + lib_type_ + dllExtPattern() + '$';
+  std::regex const e{e_str};
+  std::match_results<std::string::const_iterator> match_results;
+  if (std::regex_search(entry.first, match_results, e)) {
     spec_trans_map_[match_results[1]].insert(entry.second);
   } else {
     throw exception("LogicError")
       << "Internal error in spec_trans_map_inserter for entry " << entry.first
-      << " with pattern " << e.str();
+      << " with pattern " << e_str;
   }
   // Next, convert library filename to full libspec.
   std::ostringstream lib_name;
   std::ostream_iterator<char, char> oi{lib_name};
-  boost::regex_replace(oi,
+  std::regex_replace(oi,
                        entry.first.begin(),
                        entry.first.end(),
-                       boost::regex{"(_+)"},
-                       std::string{"(?1/)"},
-                       boost::match_default | boost::format_all);
-  boost::regex const stripper{"^lib(.*)/" + lib_type_ + "\\..*$"};
+                       std::regex{"_+"},
+                       std::string{"/"}
+                       );
+  std::regex const stripper{"^lib(.*)/" + lib_type_ + "\\..*$"};
   std::string const lib_name_str{lib_name.str()};
-  if (boost::regex_search(lib_name_str, match_results, stripper)) {
+  if (std::regex_search(lib_name_str, match_results, stripper)) {
     spec_trans_map_[match_results[1]].insert(entry.second);
   } else {
     throw exception("LogicError")

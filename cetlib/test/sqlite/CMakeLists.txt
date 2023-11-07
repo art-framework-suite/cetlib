@@ -5,7 +5,6 @@ find_package(hep_concurrency REQUIRED)
 cet_test(connection_t SCOPED LIBRARIES PRIVATE
   cetlib::sqlite
   hep_concurrency::simultaneous_function_spawner
-  Boost::filesystem
   Threads::Threads)
 cet_test(create_table_ddl_t SCOPED LIBRARIES PRIVATE cetlib::sqlite)
 cet_test(insert_t SCOPED LIBRARIES PRIVATE cetlib::sqlite)

@@ -1,4 +1,4 @@
-#include "boost/filesystem.hpp"
+#include <filesystem>
 #include "cetlib/getenv.h"
 #include "cetlib/split.h"
 
@@ -7,7 +7,7 @@
 #include <vector>
 
 using namespace std::string_literals;
-namespace bfs = boost::filesystem;
+namespace bfs = std::filesystem;
 
 namespace {
 

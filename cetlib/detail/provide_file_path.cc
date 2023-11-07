@@ -1,10 +1,11 @@
 #include "cetlib/detail/provide_file_path.h"
-#include "boost/filesystem.hpp"
+#include <cassert>
+#include <filesystem>
 
 std::string
 cet::detail::provide_file_path(char const* filename)
 {
   assert(filename);
-  boost::filesystem::path const p{filename};
+  std::filesystem::path const p{filename};
   return absolute(p).native();
 }
