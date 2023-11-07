@@ -1,6 +1,5 @@
 include(CetTest)
 cet_enable_asserts()
-cet_test_env("LC_ALL=en_US.utf8")
 
 set(THREADS_PREFER_PTHREAD_FLAG TRUE)
 
@@ -8,6 +7,11 @@ find_package(Catch2 REQUIRED)
 
 # Put everything in a different export set.
 cet_register_export_set(SET_NAME Testing NAMESPACE cetlib_test SET_DEFAULT)
+
+# Quote alternatives under different locales (used for regular expression testing)
+set(open_quote "('|‘)")
+set(close_quote "('|’)")
+
 
 add_subdirectory(sqlite)
 
@@ -256,13 +260,17 @@ foreach (compile_test IN ITEMS
     bad_reg_via_id_t bad_reg_via_id_t_2)
   cet_test(${compile_test} COMPILE_ONLY LIBRARIES PRIVATE cetlib_except::cetlib_except)
 endforeach()
+
 if (CMAKE_CXX_STANDARD GREATER_EQUAL 20)
   set_property(TARGET bad_reg_via_id_t bad_reg_via_id_t_2 APPEND PROPERTY
     COMPILE_OPTIONS "$<$<COMPILE_LANGUAGE:CXX>:-fconcepts-diagnostics-depth=2>")
   set_property(TEST bad_reg_via_id_t PROPERTY
-    PASS_REGULAR_EXPRESSION "error: ‘struct thing’ has no member named ‘id’")
+    PASS_REGULAR_EXPRESSION
+    "error: ${open_quote}struct thing${close_quote} has no member named ${open_quote}id${close_quote}")
   set_property(TEST bad_reg_via_id_t_2 PROPERTY
-    PASS_REGULAR_EXPRESSION "note: the expression ‘is_same_v<_Tp, _Up> \\[with _Tp = float; _Up = char\\]’ evaluated to ‘false’")
+    PASS_REGULAR_EXPRESSION
+    "note: the expression ${open_quote}is_same_v<_Tp, _Up> \\[with _Tp = float; _Up = char\\]${close_quote}\
+ evaluated to ${open_quote}false${close_quote}")
 else()
   set_tests_properties(bad_reg_via_id_t bad_reg_via_id_t_2
     PROPERTIES WILL_FAIL TRUE)

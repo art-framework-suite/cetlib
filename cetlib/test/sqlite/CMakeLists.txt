@@ -24,8 +24,10 @@ cet_test(transaction_t SCOPED
 cet_test(bad_col_t COMPILE_ONLY TEST_PROPERTIES
   PASS_REGULAR_EXPRESSION "template constraint failure.*known_sqlite_type<T>")
 cet_test(bad_bind_parameter_t COMPILE_ONLY TEST_PROPERTIES
-  PASS_REGULAR_EXPRESSION " note: the required expression ‘get<\\(N - 1\\)>\\(t\\)’ is invalid")
+  PASS_REGULAR_EXPRESSION " note: the required expression ${open_quote}get<\\(N - 1\\)>\\(t\\)${close_quote} is invalid")
 cet_test(bad_select_t COMPILE_ONLY
   LIBRARIES PRIVATE cetlib_except::cetlib_except
   TEST_PROPERTIES
-  PASS_REGULAR_EXPRESSION " note: the expression ‘\\(\\.\\.\\. && stringish<T>\\) \\[with T = \\{not_stringish\\}\\]’ evaluated to ‘false’")
+  PASS_REGULAR_EXPRESSION
+  " note: the expression ${open_quote}\\(\\.\\.\\. && stringish<T>\\) \\[with T = \\{not_stringish\\}\\]${close_quote}\
+ evaluated to ${open_quote}false${close_quote}")
