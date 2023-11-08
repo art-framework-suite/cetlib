@@ -1,6 +1,5 @@
 
 find_package(SQLite3 REQUIRED EXPORT)
-find_package(hep_concurrency REQUIRED EXPORT)
 
 cet_make_library(
   SOURCE

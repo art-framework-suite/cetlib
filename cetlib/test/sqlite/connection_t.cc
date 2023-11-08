@@ -16,7 +16,7 @@
 using namespace std;
 using namespace cet::sqlite;
 using namespace hep::concurrency;
-namespace bfs = std::filesystem;
+namespace fs = std::filesystem;
 
 int
 main()
@@ -28,15 +28,15 @@ main()
       string const f{"a.db"};
       unique_ptr<Connection> c{cf.make_connection(f)};
       create_table(*c, "onlyOne", column<int>{"numbers"});
-      bfs::path const p{f};
-      assert(bfs::exists(p));
+      fs::path const p{f};
+      assert(fs::exists(p));
     }
     // Check safe operation of an ephemeral connection
     {
       string const f{"ephemeral.db"};
       create_table(*cf.make_connection(f), "onlyOne", column<int>{"numbers"});
-      bfs::path const p{f};
-      assert(bfs::exists(p));
+      fs::path const p{f};
+      assert(fs::exists(p));
     }
     // Simple connection to in-memory database
     {
@@ -54,10 +54,10 @@ main()
       unique_ptr<Connection> c2{cf.make_connection(f2)};
       create_table(*c1, "separate", column<int>{"numbers"});
       create_table(*c2, "separate", column<int>{"numbers"});
-      bfs::path const p1{f1};
-      bfs::path const p2{f2};
-      assert(bfs::exists(p1));
-      assert(bfs::exists(p2));
+      fs::path const p1{f1};
+      fs::path const p2{f2};
+      assert(fs::exists(p1));
+      assert(fs::exists(p2));
     }
     auto test_colliding_tables = [&cf](string const& dbname) {
       unique_ptr<Connection> c1{cf.make_connection(dbname)};
@@ -76,8 +76,8 @@ main()
     {
       string const f{"d.db"};
       test_colliding_tables(f);
-      bfs::path const p{f};
-      assert(bfs::exists(p));
+      fs::path const p{f};
+      assert(fs::exists(p));
     }
     // Separate connections to same database in-memory database
     test_colliding_tables(":memory:");
@@ -89,8 +89,8 @@ main()
         sharedFactory.make_connection(f);
       };
       simultaneous_function_spawner launch{repeated_task(10u, makeConnection)};
-      bfs::path const p{f};
-      assert(bfs::exists(p));
+      fs::path const p{f};
+      assert(fs::exists(p));
     }
     // Test concurrent insertion into different tables, using
     // different connections that refer to the same database.

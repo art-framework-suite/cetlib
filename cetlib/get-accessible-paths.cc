@@ -7,7 +7,7 @@
 #include <vector>
 
 using namespace std::string_literals;
-namespace bfs = std::filesystem;
+namespace fs = std::filesystem;
 
 namespace {
 
@@ -16,10 +16,10 @@ namespace {
               std::string pattern_to_match,
               bool const match_full_path)
   {
-    bfs::path path{path_name};
+    fs::path path{path_name};
     if (exists(path) && is_directory(path)) {
       std::vector<std::string> v;
-      for (auto const& x : bfs::directory_iterator(path)) {
+      for (auto const& x : fs::directory_iterator(path)) {
         if (match_full_path) {
           auto const str = canonical(x.path()).string();
           if (str.find(pattern_to_match) != 0) {

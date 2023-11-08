@@ -19,7 +19,7 @@
 
 using cet::includer;
 
-namespace bfs = std::filesystem;
+namespace fs = std::filesystem;
 
 // ----------------------------------------------------------------------
 
@@ -77,10 +77,10 @@ namespace {
   std::string
   canonicalizePath(std::string const& path_str)
   try {
-    bfs::path path{path_str};
+    fs::path path{path_str};
     // If specified path does not exist, complain later.
-    if (bfs::exists(path)) {
-      path = bfs::canonical(path);
+    if (fs::exists(path)) {
+      path = fs::canonical(path);
     }
     std::string result = path.native();
     return result;
