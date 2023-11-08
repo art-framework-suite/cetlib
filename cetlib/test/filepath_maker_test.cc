@@ -7,7 +7,7 @@
 #define BOOST_TEST_MODULE (filepath_maker test)
 #include "boost/test/unit_test.hpp"
 
-#include "boost/filesystem.hpp"
+#include <filesystem>
 #include "cetlib/filepath_maker.h"
 #include "cetlib/filesystem.h"
 #include "cetlib/getenv.h"
@@ -15,7 +15,7 @@
 
 #include <string>
 
-namespace bfs = boost::filesystem;
+namespace fs = std::filesystem;
 using namespace std::string_literals;
 
 namespace {
@@ -67,11 +67,11 @@ BOOST_AUTO_TEST_CASE(filepath_lookup_t1)
     // looked up relative to the specified paths.
     auto const fullPath2 = maker("./" + filename);
     auto const fullPath3 = maker("/" + filename);
-    bfs::path const p1{fullPath1};
-    bfs::path const p2{fullPath2};
-    bfs::path const p3{fullPath3};
-    BOOST_TEST(bfs::equivalent(p1, p2));
-    BOOST_TEST(bfs::equivalent(p1, p3));
+    fs::path const p1{fullPath1};
+    fs::path const p2{fullPath2};
+    fs::path const p3{fullPath3};
+    BOOST_TEST(fs::equivalent(p1, p2));
+    BOOST_TEST(fs::equivalent(p1, p3));
     // Check that operator() has created an absolute filepath.
     BOOST_TEST(cet::is_absolute_filepath(fullPath1));
     BOOST_TEST(cet::is_absolute_filepath(fullPath2));
@@ -97,9 +97,9 @@ BOOST_AUTO_TEST_CASE(filepath_lookup_nonabsolute_t)
     auto const fullPath1 = maker(filename);
     // Test that it can be accessed via the absolute path
     auto const fullPath2 = maker(current_nested_dir() + '/' + filename);
-    bfs::path const p1{fullPath1};
-    bfs::path const p2{fullPath2};
-    BOOST_TEST(bfs::equivalent(p1, p2));
+    fs::path const p1{fullPath1};
+    fs::path const p2{fullPath2};
+    BOOST_TEST(fs::equivalent(p1, p2));
     // Check that operator() has created an absolute filepath.
     BOOST_TEST(cet::is_absolute_filepath(fullPath1));
     BOOST_TEST(cet::is_absolute_filepath(fullPath2));

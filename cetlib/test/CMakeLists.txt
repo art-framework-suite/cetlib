@@ -66,7 +66,7 @@ cet_test(filepath_maker_test USE_BOOST_UNIT
   ENVIRONMENT "CURRENT_DIR=${CMAKE_CURRENT_SOURCE_DIR};\
 FILEPATH_MAKER_TEST_FILES=${CMAKE_CURRENT_SOURCE_DIR}/filepath_maker-files"
   TEST_WORKDIR "${CMAKE_CURRENT_SOURCE_DIR}"
-  LIBRARIES PRIVATE cetlib::cetlib Boost::filesystem)
+  LIBRARIES PRIVATE cetlib::cetlib)
 
 cet_test(inc-expand_test.sh PREBUILT DEPENDENCIES inc-expand)
 
@@ -154,7 +154,6 @@ test_library(2_1_5)
 cet_test(LibraryManager_t USE_BOOST_UNIT
   LIBRARIES PRIVATE
     cetlib::cetlib
-    Boost::filesystem
     ${CMAKE_DL_LIBS}
 )
 
@@ -163,7 +162,6 @@ cet_test(LibraryManagerCustomSearchPath_t USE_BOOST_UNIT
   SOURCE LibraryManager_t.cc
     LIBRARIES PRIVATE
       cetlib::cetlib
-      Boost::filesystem
       ${CMAKE_DL_LIBS}
   TEST_PROPERTIES ENVIRONMENT LIBRARY_MANAGER_SEARCH_PATH=$<TARGET_FILE_DIR:1_1_1_cetlibtest>
 )
