@@ -162,7 +162,7 @@ cet::LibraryManager::spec_trans_map_inserter(
   lib_loc_map_t::value_type const& entry)
 {
   // First obtain short spec.
-  std::string e_str =
+  std::string const e_str =
     "([^_]+)_" + lib_type_ + dllExtPattern() + '$';
   std::regex const e{e_str};
   std::match_results<std::string::const_iterator> match_results;
