@@ -10,7 +10,6 @@ find_package(Boost COMPONENTS regex REQUIRED)
 find_package(Boost COMPONENTS program_options filesystem REQUIRED EXPORT)
 find_package(cetlib_except REQUIRED EXPORT)
 find_package(SQLite3 REQUIRED EXPORT)
-find_package(hep_concurrency REQUIRED EXPORT)
 
 ####################################
 # Libraries.

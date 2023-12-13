@@ -58,12 +58,8 @@ TEST_CASE("Tests")
 {
   // Setup.
   unsetenv(plugin_libpath());
-  string const default_libpath{cet::getenv(os_libpath(), std::nothrow)};
-  if (default_libpath.empty()) {
-    // Need *something*.
-    setenv(os_libpath(), "/dev/null/libpath", 1);
-  }
-  auto const libpath_before = cet::getenv(os_libpath());
+  string const libpath_before { "/dev/null/libpath1:/dev/null/libpath2:/dev/null/libpath3" };
+  setenv(os_libpath(), libpath_before.c_str(), 1);
 
   ////////////////////////////////////
   // Tests.
@@ -129,7 +125,4 @@ TEST_CASE("Tests")
     CHECK(1ull == sp.size()); // "."
     CHECK(remove_dups_from_path(libpath_before) == cet::getenv(os_libpath()));
   }
-
-  // Teardown.
-  setenv(os_libpath(), default_libpath.c_str(), 1);
 }

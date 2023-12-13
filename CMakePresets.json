@@ -92,7 +92,7 @@
             },
             "cetlib_UPS_BUILD_ONLY_DEPENDENCIES_INIT" : {
                "type" : "STRING",
-               "value" : "catch;cetmodules"
+               "value" : "catch;cetmodules;hep_concurrency"
             },
             "cetlib_UPS_PRODUCT_FLAVOR_INIT" : {
                "type" : "STRING",

@@ -13,7 +13,6 @@ cet_make_library(
     PUBLIC
       cetlib::container_algorithms
       cetlib_except::cetlib_except
-      hep_concurrency::hep_concurrency
       SQLite::SQLite3
 )
 
