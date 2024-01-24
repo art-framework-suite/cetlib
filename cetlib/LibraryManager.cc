@@ -29,12 +29,6 @@ namespace {
   }
 }
 
-std::string
-cet::LibraryManager::defaultPatternStem()
-{
-  return "(?:[A-Za-z0-9\\-]*_)*[A-Za-z0-9]+_";
-}
-
 cet::LibraryManager::LibraryManager(search_path search_path,
                                     std::string lib_type)
   : LibraryManager{std::move(search_path),

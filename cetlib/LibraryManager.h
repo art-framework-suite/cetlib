@@ -40,7 +40,10 @@ public:
   // pattern stem is the substring 'aa_bb_cc_xyz_'.  The default
   // pattern stem is thus the regular expression pattern that supports
   // such a form.
-  static std::string defaultPatternStem();
+  static std::string constexpr defaultPatternStem() {
+    using namespace std::string_literals;
+    return "(?:[A-Za-z0-9\\-]*_)*[A-Za-z0-9]+_"s;
+  }
 
   // The d'tor does NOT unload libraries, because that is dangerous to
   // do in C++. Use the compiler-generated default destructor.
