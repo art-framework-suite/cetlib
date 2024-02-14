@@ -253,7 +253,7 @@ product		version		qual	flags		<table_format=2>
 boost		v1_82_0
 sqlite		v3_40_01_00
 catch		v3_3_2		-	only_for_build
-cetmodules	v3_23_01	-	only_for_build
+cetmodules	v3_24_00	-	only_for_build
 cetlib_except	v1_09_01
 hep_concurrency	v1_09_02	-	only_for_build
 end_product_list
