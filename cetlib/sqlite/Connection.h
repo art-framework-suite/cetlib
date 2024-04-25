@@ -21,12 +21,22 @@
 #include "cetlib/sqlite/detail/bind_parameters.h"
 #include "sqlite3.h"
 
+#include <concepts>
 #include <memory>
 #include <mutex>
 #include <string>
 #include <vector>
 
 namespace cet::sqlite {
+
+  namespace detail {
+    template <typename Policy>
+    concept valid_policy = requires(Policy p, std::string arg) {
+                             {
+                               p.open(arg)
+                               } -> std::same_as<sqlite3*>;
+                           };
+  }
 
   class Connection {
     friend class ConnectionFactory;
@@ -56,6 +66,7 @@ namespace cet::sqlite {
 
   private:
     template <typename DatabaseOpenPolicy>
+      requires detail::valid_policy<DatabaseOpenPolicy>
     explicit Connection(std::string const& filename,
                         std::shared_ptr<std::recursive_mutex>,
                         DatabaseOpenPolicy);
@@ -66,7 +77,7 @@ namespace cet::sqlite {
     std::shared_ptr<std::recursive_mutex> mutex_{nullptr};
   };
 
-  template <typename DatabaseOpenPolicy>
+  template <detail::valid_policy DatabaseOpenPolicy>
   Connection::Connection(std::string const& filename,
                          std::shared_ptr<std::recursive_mutex> spmutex,
                          DatabaseOpenPolicy policy)

@@ -12,25 +12,30 @@
 #include <type_traits>
 #include <utility>
 
+#include "cetlib/detail/cetlib_concepts.h"
+#include <concepts>
 // ----------------------------------------------------------------------
 
 namespace cet {
   template <class T>
-  std::enable_if_t<std::is_arithmetic_v<T>, T> hypot(T x, T y);
+    requires(detail::is_arithmetic<T>)
+  T hypot(T x, T y);
 
   template <class T>
-  std::enable_if_t<std::is_arithmetic_v<T>, T> unchecked_hypot(T x, T y);
+    requires(detail::is_arithmetic<T>)
+  T unchecked_hypot(T x, T y);
 
   template <class T>
-  std::enable_if_t<std::is_arithmetic_v<T>, T> checked_hypot(T x, T y);
+    requires(detail::is_arithmetic<T>)
+  T checked_hypot(T x, T y);
 }
 
 // ----------------------------------------------------------------------
 // unchecked_hypot<>:
 
 template <class T>
-inline std::enable_if_t<std::is_arithmetic_v<T>, T>
-cet::unchecked_hypot(T x, T y)
+  requires(cet::detail::is_arithmetic<T>)
+inline T cet::unchecked_hypot(T x, T y)
 {
   return std::hypot(x, y);
 }
@@ -39,8 +44,8 @@ cet::unchecked_hypot(T x, T y)
 // checked_hypot<>:
 
 template <class T>
-std::enable_if_t<std::is_arithmetic_v<T>, T>
-cet::checked_hypot(T x, T y)
+  requires(cet::detail::is_arithmetic<T>)
+T cet::checked_hypot(T x, T y)
 {
 
   if (std::isinf(x) || std::isinf(y))
@@ -56,13 +61,11 @@ cet::checked_hypot(T x, T y)
 // hypot<>:
 
 template <class T>
-inline std::enable_if_t<std::is_arithmetic_v<T>, T>
-cet::hypot(T x, T y)
+  requires(cet::detail::is_arithmetic<T>)
+inline T cet::hypot(T x, T y)
 {
   return checked_hypot(x, y);
 }
-
-// ======================================================================
 
 #endif /* cetlib_hypot_h */
 

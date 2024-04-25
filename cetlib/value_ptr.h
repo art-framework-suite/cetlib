@@ -64,23 +64,41 @@
 #include <type_traits>
 #include <utility>
 
+#include <concepts>
+
 namespace cet {
-  namespace _ {
-    template <class T>
-    struct has_clone;
-
-    template <class Element,
-              bool = std::is_polymorphic_v<Element>&& has_clone<Element>::value>
-    struct default_action;
-
-    template <class Element>
-    struct default_action<Element, false>;
-  }
-
   template <class Element>
   struct default_copy;
   template <class Element>
   struct default_clone;
+
+  namespace _ {
+    template <class T>
+    struct has_clone;
+
+    template <typename Element>
+    struct default_action;
+
+    template <typename Element>
+    concept PolymorphicWithClone = (std::is_polymorphic_v<Element> &&
+                                    has_clone<Element>::value);
+
+    template <typename Element>
+    struct default_action : public default_copy<Element> {
+      using default_copy<Element>::operator();
+    };
+
+    template <PolymorphicWithClone Element>
+    struct default_action<Element> : public default_clone<Element> {
+      using default_clone<Element>::operator();
+    };
+
+    template <typename Element, typename Cloner, typename E2>
+    concept WouldSlice = std::is_polymorphic_v<E2> &&
+                         (!std::is_same_v<Element, E2>) &&
+                         std::is_base_of_v<default_copy<Element>, Cloner>;
+
+  }
 
   template <class Element,
             class Cloner = _::default_action<Element>,
@@ -163,24 +181,6 @@ public:
 
 }; // default_clone<>
 
-// ----------------------------------------------------------------------
-
-template <class Element, bool>
-struct cet::_::default_action : public default_clone<Element> {
-public:
-  using default_clone<Element>::operator();
-
-}; // default_action<>
-
-template <class Element>
-struct cet::_::default_action<Element, false> : public default_copy<Element> {
-public:
-  using default_copy<Element>::operator();
-
-}; // default_action<>
-
-// ----------------------------------------------------------------------
-
 template <class Element, class Cloner, class Deleter>
 class cet::value_ptr {
 public:
@@ -208,15 +208,9 @@ public:
   constexpr value_ptr(std::nullptr_t) noexcept : p{nullptr} {}
 
   template <class E2>
+    requires is_compatible_v<E2> && (!_::WouldSlice<Element, Cloner, E2>)
   explicit value_ptr(E2* other) noexcept : p{other}
-  {
-    static_assert(is_compatible_v<E2>,
-                  "value_ptr<>'s pointee type is incompatible!");
-    static_assert(
-      !std::is_polymorphic_v<E2> ||
-        !(std::is_same_v<Cloner, _::default_action<Element, false>>),
-      "value_ptr<>'s pointee type would slice when copying!");
-  }
+  {}
 
   // copying c'tors:
   value_ptr(value_ptr const& other) : p{clone_from(other.p)} {}

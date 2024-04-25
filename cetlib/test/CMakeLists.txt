@@ -8,6 +8,11 @@ find_package(Catch2 REQUIRED)
 # Put everything in a different export set.
 cet_register_export_set(SET_NAME Testing NAMESPACE cetlib_test SET_DEFAULT)
 
+# Quote alternatives under different locales (used for regular expression testing)
+set(open_quote "('|‘)")
+set(close_quote "('|’)")
+
+
 add_subdirectory(sqlite)
 
 cet_test(bit_test)
@@ -38,7 +43,7 @@ foreach (test IN ITEMS
     trim_test
     value_ptr_test
 )
-  cet_test(${test} USE_BOOST_UNIT LIBRARIES PRIVATE cetlib::cetlib)
+  cet_test(${test} USE_BOOST_UNIT)
 endforeach()
 
 # Other tests.
@@ -59,23 +64,27 @@ endforeach()
 
 cet_test(cpu_timer_test USE_BOOST_UNIT
   TEST_PROPERTIES RUN_SERIAL true
-  OPTIONAL_GROUPS LOAD_SENSITIVE
-  LIBRARIES PRIVATE cetlib::cetlib)
+  OPTIONAL_GROUPS LOAD_SENSITIVE)
 cet_test(filepath_maker_test USE_BOOST_UNIT
   TEST_PROPERTIES
   ENVIRONMENT "CURRENT_DIR=${CMAKE_CURRENT_SOURCE_DIR};\
 FILEPATH_MAKER_TEST_FILES=${CMAKE_CURRENT_SOURCE_DIR}/filepath_maker-files"
   TEST_WORKDIR "${CMAKE_CURRENT_SOURCE_DIR}"
-  LIBRARIES PRIVATE cetlib::cetlib Boost::filesystem)
+  LIBRARIES PRIVATE cetlib::cetlib)
 
-cet_test(inc-expand_test.sh PREBUILT DEPENDENCIES inc-expand)
+cet_test(inc-expand_test.sh PREBUILT
+  TEST_ARGS $<TARGET_FILE:inc-expand>
+  DEPENDENCIES inc-expand)
 
 cet_make_exec(NAME search_path_test_2 NO_INSTALL)
-cet_test(search_path_test_2.sh PREBUILT DEPENDENCIES search_path_test_2)
+cet_test(search_path_test_2.sh PREBUILT
+  TEST_ARGS $<TARGET_FILE:search_path_test_2>
+  DEPENDENCIES search_path_test_2)
 
 cet_test(sha1_test_2 SOURCE sha1_test_2.cc sha1.cpp)
 cet_test(sha1_test_performance SOURCE sha1_test_performance.cc sha1.cpp)
-cet_test(split_path_test)
+
+cet_test(split_search_path_t USE_CATCH2_MAIN)
 
 # Add cetlib::cetlib as a dependency where necessary.
 foreach (target IN ITEMS
@@ -83,13 +92,18 @@ foreach (target IN ITEMS
     base_converter_test
     canonical_string_test
     column_width_test
+    container_algs_test
+    cpu_timer_test
+    exempt_ptr_test
     filesystem_test
     include_test
     includer_test
     is_absolute_filepath_t
     lpad_test
     map_vector_test
+    maybe_ref_test
     nybbler_test
+    ostream_handle_test
     pow_constexpr_test
     pow_test
     registry_test
@@ -104,10 +118,17 @@ foreach (target IN ITEMS
     shlib_utils_t
     simple_stats_t
     split_by_regex_test
-    split_path_test
-)
- target_link_libraries(${target} PRIVATE cetlib::cetlib)
+    split_search_path_t
+    split_test
+    trim_test
+    value_ptr_test)
+  target_link_libraries(${target} PRIVATE cetlib::cetlib)
 endforeach()
+
+# Take advantage of C++23 for split_search_path_t if we can.
+if (cxx_std_23 IN_LIST CMAKE_CXX_COMPILE_FEATURES)
+  target_compile_features(split_search_path_t PRIVATE cxx_std_23)
+endif()
 
 ####################################
 # Test plugin machinery.
@@ -118,17 +139,21 @@ cet_make_library(LIBRARY_NAME cetlib_test_TestPluginBase SOURCE TestPluginBase.c
   LIBRARIES PRIVATE art_plugin_support::support_macros)
 
 include(BasicPlugin)
-basic_plugin(TestPlugin "plugin" NO_INSTALL LIBRARIES PRIVATE cetlib_test::TestPluginBase)
+basic_plugin(TestPlugin "plugin" NO_INSTALL
+  LIBRARIES PRIVATE cetlib_test::TestPluginBase)
 
 # Use default Plugin lookup
 cet_test(PluginFactory_t USE_BOOST_UNIT
-  LIBRARIES PRIVATE cetlib_test::TestPluginBase cetlib::cetlib)
+  LIBRARIES PRIVATE cetlib_test::TestPluginBase cetlib::cetlib
+  TEST_PROPERTIES ENVIRONMENT
+  CET_PLUGIN_PATH=$<TARGET_FILE_DIR:cetlib_test::TestPlugin_plugin>)
 
 # Use custom Plugin lookup
 cet_test(PluginFactoryCustomSearchPath_t USE_BOOST_UNIT
   SOURCE PluginFactory_t.cc
   LIBRARIES PRIVATE cetlib_test::TestPluginBase cetlib::cetlib
-  TEST_PROPERTIES ENVIRONMENT PLUGIN_FACTORY_SEARCH_PATH=$<TARGET_FILE_DIR:cetlib_test::TestPlugin_plugin>)
+  TEST_PROPERTIES ENVIRONMENT
+  PLUGIN_FACTORY_SEARCH_PATH=$<TARGET_FILE_DIR:cetlib_test::TestPlugin_plugin>)
 target_compile_definitions(PluginFactoryCustomSearchPath_t PRIVATE PLUGIN_FACTORY_SEARCH_PATH=1)
 
 function(test_library LIBSPEC)
@@ -154,8 +179,8 @@ test_library(2_1_5)
 cet_test(LibraryManager_t USE_BOOST_UNIT
   LIBRARIES PRIVATE
     cetlib::cetlib
-    Boost::filesystem
     ${CMAKE_DL_LIBS}
+  TEST_PROPERTIES ENVIRONMENT CET_PLUGIN_PATH=$<TARGET_FILE_DIR:1_1_1_cetlibtest>
 )
 
 # Use custom library search path
@@ -163,15 +188,17 @@ cet_test(LibraryManagerCustomSearchPath_t USE_BOOST_UNIT
   SOURCE LibraryManager_t.cc
     LIBRARIES PRIVATE
       cetlib::cetlib
-      Boost::filesystem
       ${CMAKE_DL_LIBS}
   TEST_PROPERTIES ENVIRONMENT LIBRARY_MANAGER_SEARCH_PATH=$<TARGET_FILE_DIR:1_1_1_cetlibtest>
 )
-target_compile_definitions(LibraryManagerCustomSearchPath_t PRIVATE LIBRARY_MANAGER_SEARCH_PATH=1)
+target_compile_definitions(LibraryManagerCustomSearchPath_t
+  PRIVATE LIBRARY_MANAGER_SEARCH_PATH=1)
 
 cet_test(replace_all_test USE_BOOST_UNIT LIBRARIES PRIVATE cetlib::cetlib)
+
 cet_test(regex_t USE_BOOST_UNIT LIBRARIES PRIVATE cetlib::cetlib
   TEST_WORKDIR ${CMAKE_CURRENT_SOURCE_DIR})
+
 cet_test(regex_standalone_t SOURCE regex_t.cc
   TEST_WORKDIR ${CMAKE_CURRENT_SOURCE_DIR})
 
@@ -196,3 +223,47 @@ cet_make_exec(NAME hypot_test USE_CATCH2_MAIN NO_INSTALL)
 include(ParseAndAddCatchTests)
 set(AdditionalCatchParameters -s)
 ParseAndAddCatchTests(hypot_test)
+
+foreach(compile_test IN ITEMS
+    bad_hard_cast_t bad_copy_all_t bad_for_all_container_t bad_for_all_func_t bad_pow_t bad_search_path_t bad_lib_manager_t bad_bit_manipulation_t)
+  cet_test(${compile_test} COMPILE_ONLY TEST_PROPERTIES WILL_FAIL TRUE LIBRARIES PRIVATE cetlib::headers)
+endforeach()
+
+foreach(compile_test IN ITEMS
+    bad_value_ptr_t bad_value_ptr_t_2 bad_value_ptr_t_3)
+  cet_test(${compile_test} COMPILE_ONLY LIBRARIES PRIVATE cetlib::headers)
+endforeach()
+if (CMAKE_CXX_STANDARD GREATER_EQUAL 20)
+  set_property(TEST bad_value_ptr_t PROPERTY PASS_REGULAR_EXPRESSION
+    "is_compatible_v<E2>.*evaluated to ")
+  set_tests_properties(bad_value_ptr_t_2 bad_value_ptr_t_3
+    PROPERTIES PASS_REGULAR_EXPRESSION
+    "!\\(WouldSlice<Element, Cloner, E2>\\).*evaluated to ")
+else()
+  set_tests_properties(bad_value_ptr_t bad_value_ptr_t_2 bad_value_ptr_t_3
+    PROPERTIES WILL_FAIL TRUE)
+endif()
+
+cet_test(bad_hypot_t COMPILE_ONLY LIBRARIES PRIVATE cetlib::headers)
+if (CMAKE_CXX_STANDARD GREATER_EQUAL 20)
+  set_property(TEST bad_hypot_t PROPERTY PASS_REGULAR_EXPRESSION
+    "is_arithmetic<T>.*evaluated to ")
+else()
+  set_tests_properties(bad_hypot_t
+    PROPERTIES WILL_FAIL TRUE)
+endif()
+
+foreach (compile_test IN ITEMS
+    bad_reg_via_id_t bad_reg_via_id_t_2)
+  cet_test(${compile_test} COMPILE_ONLY LIBRARIES PRIVATE cetlib::headers cetlib_except::cetlib_except)
+endforeach()
+
+if (CMAKE_CXX_STANDARD GREATER_EQUAL 20)
+  set_property(TEST bad_reg_via_id_t PROPERTY
+    PASS_REGULAR_EXPRESSION "note: the required expression ${open_quote}val\\.id\\(\\)${close_quote} is invalid")
+  set_property(TEST bad_reg_via_id_t_2 PROPERTY
+    PASS_REGULAR_EXPRESSION "note: ${open_quote}val\\.id\\(\\)${close_quote} does not satisfy return-type-requirement")
+else()
+  set_tests_properties(bad_reg_via_id_t bad_reg_via_id_t_2
+    PROPERTIES WILL_FAIL TRUE)
+endif()

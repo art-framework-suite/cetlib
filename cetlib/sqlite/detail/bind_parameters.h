@@ -31,6 +31,7 @@ namespace cet::sqlite::detail {
   void bind_one_null(sqlite3_stmt* s, std::size_t const idx);
 
   template <class TUP, size_t N>
+    requires requires(TUP t) { std::get<N - 1>(t); }
   struct bind_parameters {
     static void
     bind(sqlite3_stmt* s, TUP const& t)

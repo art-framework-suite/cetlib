@@ -1,7 +1,7 @@
 #!/bin/bash
 
-TEST_PGM=inc-expand
-WORKDIR=`mktemp -d ${TMPDIR:-/tmp}/${TEST_PGM}.XXXXXXXXXX`
+TEST_PGM=$1
+WORKDIR=`mktemp -d ${TMPDIR:-/tmp}/$(basename $TEST_PGM).XXXXXXXXXX`
 [[ -n "$WORKDIR" ]] && [[ -d "$WORKDIR" ]] || [[ -w "$WORKDIR" ]] || exit 1
 
 # Clean up if we're not debugging.

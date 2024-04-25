@@ -5,6 +5,7 @@
 #include "cetlib/search_path.h"
 #include "cetlib/shlib_utils.h"
 
+#include <concepts>
 #include <cstring>
 #include <map>
 #include <set>
@@ -34,6 +35,15 @@ public:
   // Use platform-dependent dynamic loader search path
   explicit LibraryManager(std::string lib_type);
   explicit LibraryManager(std::string lib_type, std::string pattern);
+
+  // For the string above ('libaa_bb_cc_xyz_<lib_type>.<ext>'), the
+  // pattern stem is the substring 'aa_bb_cc_xyz_'.  The default
+  // pattern stem is thus the regular expression pattern that supports
+  // such a form.
+  static std::string constexpr defaultPatternStem() {
+    using namespace std::string_literals;
+    return "(?:[A-Za-z0-9\\-]*_)*[A-Za-z0-9]+_"s;
+  }
 
   // The d'tor does NOT unload libraries, because that is dangerous to
   // do in C++. Use the compiler-generated default destructor.
@@ -91,18 +101,18 @@ public:
   // Get a list of loadable libraries (full paths). Returns the number
   // of entries.
   size_t getLoadableLibraries(std::vector<std::string>& list) const;
-  template <class OutIter>
+  template <cet::detail::valid_iter OutIter>
   size_t getLoadableLibraries(OutIter dest) const;
 
   // Get a list of already-loaded libraries (full paths). Returns the
   // number of entries.
   size_t getLoadedLibraries(std::vector<std::string>& list) const;
-  template <class OutIter>
+  template <cet::detail::valid_iter OutIter>
   size_t getLoadedLibraries(OutIter dest) const;
 
   // Get list of valid libspecs. Returns the number of entries.
   size_t getValidLibspecs(std::vector<std::string>& list) const;
-  template <class OutIter>
+  template <cet::detail::valid_iter OutIter>
   size_t getValidLibspecs(OutIter dest) const;
 
   // Get pair of short and full libspecs corresponding to library full
@@ -209,7 +219,7 @@ cet::LibraryManager::getSymbolByPath(std::string const& lib_loc,
   hard_cast<T>(getSymbolByPath_(lib_loc, sym_name), sym);
 }
 
-template <class OutIter>
+template <cet::detail::valid_iter OutIter>
 size_t
 cet::LibraryManager::getLoadableLibraries(OutIter dest) const
 {
@@ -260,7 +270,7 @@ cet::LibraryManager::getSymbolByPath(std::string const& lib_loc,
   hard_cast<T>(getSymbolByPath_(lib_loc, sym_name, false), sym);
 }
 
-template <class OutIter>
+template <cet::detail::valid_iter OutIter>
 size_t
 cet::LibraryManager::getLoadedLibraries(OutIter dest) const
 {
@@ -272,7 +282,7 @@ cet::LibraryManager::getLoadedLibraries(OutIter dest) const
   return count;
 }
 
-template <class OutIter>
+template <cet::detail::valid_iter OutIter>
 size_t
 cet::LibraryManager::getValidLibspecs(OutIter dest) const
 {

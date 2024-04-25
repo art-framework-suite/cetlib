@@ -1,5 +1,6 @@
 #!/bin/bash
 
+test_exec=$1
 export TMP_DIR=`mktemp -d /tmp/${0##*/}.XXXXXXXXXX`
 
 [[ -z "$DEBUG" ]] && trap "[[ -d \"$TMP_DIR\" ]] && rm -rf \"$TMP_DIR\"" EXIT
@@ -16,9 +17,9 @@ done
 
 echo `pwd`
 
-search_path_test_2 "lib.*one.so"   TMP_DIR; test $? -eq 2 || exit 1
-search_path_test_2 "lib.*two.so"   TMP_DIR; test $? -eq 2 || exit 2
-search_path_test_2 "lib.*three.so" TMP_DIR; test $? -eq 1 || exit 3
-search_path_test_2 "lib.*four.so"  TMP_DIR; test $? -eq 0 || exit 4
+$test_exec "lib.*one.so"   TMP_DIR; test $? -eq 2 || exit 1
+$test_exec "lib.*two.so"   TMP_DIR; test $? -eq 2 || exit 2
+$test_exec "lib.*three.so" TMP_DIR; test $? -eq 1 || exit 3
+$test_exec "lib.*four.so"  TMP_DIR; test $? -eq 0 || exit 4
 
 exit 0

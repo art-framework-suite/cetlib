@@ -10,7 +10,7 @@
 #include "cetlib/os_libpath.h"
 #include "cetlib/plugin_libpath.h"
 #include "cetlib/search_path.h"
-#include "cetlib/split_path.h"
+#include "cetlib/split_search_path.h"
 
 #include <cstdlib>
 #include <set>
@@ -38,10 +38,8 @@ namespace {
   remove_dups_from_path(string const& path)
   {
     string result;
-    std::vector<string> path_bits;
     std::set<string> paths_used;
-    cet::split_path(path, path_bits);
-    for (auto const& bit : path_bits) {
+    for (auto const& bit : cet::split_search_path(path)) {
       if (paths_used.find(bit) == paths_used.end()) {
         if (!result.empty()) {
           result.append(":");
@@ -58,7 +56,8 @@ TEST_CASE("Tests")
 {
   // Setup.
   unsetenv(plugin_libpath());
-  string const libpath_before { "/dev/null/libpath1:/dev/null/libpath2:/dev/null/libpath3" };
+  string const libpath_before{
+    "/dev/null/libpath1:/dev/null/libpath2:/dev/null/libpath3"};
   setenv(os_libpath(), libpath_before.c_str(), 1);
 
   ////////////////////////////////////

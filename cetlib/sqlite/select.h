@@ -133,15 +133,19 @@ namespace cet::sqlite {
   };
 
   namespace detail {
+    template <typename T>
+    concept stringish = std::convertible_to<T, std::string>;
+
     template <typename H, typename... T>
     std::string
     concatenate(H const& h, T const&... t)
     {
-      return (std::string{h} + ... + ("," + std::string{t}));
+      using namespace std::string_literals;
+      return (std::string{h} + ... + (","s + t));
     }
   }
 
-  template <typename... T>
+  template <detail::stringish... T>
   auto
   select(T const&... t)
   {
@@ -149,7 +153,7 @@ namespace cet::sqlite {
     return IncompleteSelectStmt{std::move(result)};
   }
 
-  template <typename... T>
+  template <detail::stringish... T>
   auto
   select_distinct(T const&... t)
   {

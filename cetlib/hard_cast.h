@@ -1,6 +1,8 @@
 #ifndef cetlib_hard_cast_h
 #define cetlib_hard_cast_h
 
+#include "cetlib/detail/cetlib_concepts.h"
+#include <concepts>
 #include <cstring>
 
 namespace cet {
@@ -8,13 +10,14 @@ namespace cet {
   // sufficient to the task. The only case of this known currently is
   // when using dlopen, dlsym, etc. and a void * must be cast to a
   // function pointer.
-  template <typename PTR_T>
+  template <detail::cet_pointer PTR_T>
   PTR_T hard_cast(void* src);
-  template <typename PTR_T>
+
+  template <detail::cet_pointer PTR_T>
   void hard_cast(void* src, PTR_T& dest);
 }
 
-template <typename PTR_T>
+template <cet::detail::cet_pointer PTR_T>
 inline PTR_T
 cet::hard_cast(void* src)
 {
@@ -23,7 +26,7 @@ cet::hard_cast(void* src)
   return dest;
 }
 
-template <typename PTR_T>
+template <cet::detail::cet_pointer PTR_T>
 inline void
 cet::hard_cast(void* src, PTR_T& dest)
 {

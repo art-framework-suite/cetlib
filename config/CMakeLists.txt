@@ -6,5 +6,7 @@ project_variable(PLUGINVERSIONINFO_PM_IN
   TYPE FILEPATH_FRAGMENT CONFIG
   DOCSTRING "Location of PluginVersionInfo.pm.in template for install_perllib()")
 
+cet_copy(${CMAKE_CURRENT_SOURCE_DIR}/PluginVersionInfo.pm.in
+  DESTINATION .)
 install(FILES PluginVersionInfo.pm.in
   DESTINATION ${${PROJECT_NAME}_CONFIG_DIR})

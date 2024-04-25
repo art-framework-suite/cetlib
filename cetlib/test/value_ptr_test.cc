@@ -89,12 +89,6 @@ BOOST_AUTO_TEST_CASE(polymorphism_test)
   value_ptr<Base, default_copy<Base>> b(new Base);
   BOOST_TEST(bool(b));
   BOOST_TEST(b->who() == std::string("Base"));
-
-  value_ptr<Base, default_copy<Base> // request slicing
-            >
-    d(new Derived);
-  BOOST_TEST(bool(d));
-  BOOST_TEST(d->who() == std::string("Derived"));
 }
 
 BOOST_AUTO_TEST_SUITE_END()

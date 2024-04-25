@@ -10,14 +10,14 @@
 // query.
 //
 // The query_result is not automatically populated upon construction,
-// but it is populated to a call to operator<< (e.g.):
+// but it is populated by a call to operator<< (e.g.):
 //
 //   query_result<int, string> nums;
 //   nums << select("id", "name").from(db, "workers");
 //
 // where 'nums' now contains the set of values from column "id" and
-// column "name" of table "workers" in the database db.  After the
-// query result has been filled, it can be interacted through a simple
+// column "name" of table "workers" in the database db.  After the query
+// result has been filled, it can be interacted with through a simple
 // loop:
 //
 //   for (auto const& [id, name] : nums) {

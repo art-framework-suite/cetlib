@@ -70,11 +70,11 @@ namespace cet::sqlite {
     void
     values_str_impl(std::ostream& os, H const& h, T const&... t)
     {
-      if (sizeof...(T) != 0u) {
-        os << maybe_quote(h) << ',';
+      os << maybe_quote(h);
+      if constexpr (sizeof...(T) != 0u) {
+        os << ',';
         values_str_impl(os, t...);
-      } else
-        os << maybe_quote(h);
+      }
     }
 
     template <typename... Args>

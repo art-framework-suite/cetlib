@@ -6,10 +6,7 @@
 
 include(CetMake)
 
-find_package(Boost COMPONENTS regex REQUIRED)
-find_package(Boost COMPONENTS program_options filesystem REQUIRED EXPORT)
 find_package(cetlib_except REQUIRED EXPORT)
-find_package(SQLite3 REQUIRED EXPORT)
 
 ####################################
 # Libraries.
@@ -55,6 +52,7 @@ cet_make_library(HEADERS_TARGET
     search_path.cc
     sha1.cc
     simple_stats.cc
+    split_search_path.cc
     split_path.cc
     split_by_regex.cc
   LIBRARIES
@@ -62,8 +60,6 @@ cet_make_library(HEADERS_TARGET
       cetlib_except::cetlib_except
       cetlib::container_algorithms
     PRIVATE
-      Boost::filesystem
-      Boost::regex
       ${CMAKE_DL_LIBS}
 )
 
@@ -90,9 +86,9 @@ cet_make_library(LIBRARY_NAME support_macros INTERFACE
     PluginTypeDeducer.h
   LIBRARIES INTERFACE
     cetlib::compiler_macros
-    Boost::filesystem
 )
 
+find_package(Boost COMPONENTS program_options REQUIRED EXPORT)
 cet_make_library(LIBRARY_NAME cetlib_parsed_program_options
   SOURCE parsed_program_options.cc
   LIBRARIES
@@ -103,7 +99,7 @@ cet_make_library(LIBRARY_NAME cetlib_parsed_program_options
 
 # Executables.
 cet_make_exec(NAME inc-expand LIBRARIES PRIVATE cetlib::cetlib)
-cet_make_exec(NAME get-accessible-paths LIBRARIES PRIVATE cetlib::cetlib Boost::filesystem)
+cet_make_exec(NAME get-accessible-paths LIBRARIES PRIVATE cetlib::cetlib)
 
 # Headers and source.
 install_headers(SUBDIRS detail)

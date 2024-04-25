@@ -26,8 +26,7 @@ BOOST_TEST_REQUIRE(static_cast<bool>(inFile));
 #ifdef STANDALONE_TEST
 std::string const pattern_stem = {"(?:[A-Za-z0-9\\-]*_)*[A-Za-z0-9]+_"};
 #else
-cet::LibraryManager dummy("noplugin");
-std::string const pattern_stem = dummy.patternStem();
+std::string const pattern_stem = cet::LibraryManager::defaultPatternStem();
 #endif
 std::string pattern =
   std::string("lib(") + pattern_stem + ")([A-Za-z0-9]+)\\.so";

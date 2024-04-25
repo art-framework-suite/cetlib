@@ -1,3 +1,6 @@
+
+find_package(SQLite3 REQUIRED EXPORT)
+
 cet_make_library(
   SOURCE
     Connection.cc

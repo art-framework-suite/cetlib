@@ -9,6 +9,8 @@
 
 #include "cetlib/container_algorithms.h"
 
+#include "cetlib/detail/cetlib_concepts.h"
+#include <concepts>
 #include <cstdlib>
 #include <new>
 #include <ostream>
@@ -85,7 +87,7 @@ public:
   // that is used for the matching. The path to each matching file is
   // written to 'dest', and the total number of matching paths is the
   // return value of the function.
-  template <class OutIter>
+  template <detail::valid_iter OutIter>
   std::size_t find_files(std::string const& filename_pattern,
                          OutIter dest) const;
 
@@ -97,7 +99,7 @@ private:
   std::vector<std::string> dirs_{};
 }; // search_path
 
-template <class OutIter>
+template <cet::detail::valid_iter OutIter>
 std::size_t
 cet::search_path::find_files(std::string const& pattern, OutIter dest) const
 {

@@ -12,8 +12,9 @@
 #include <vector>
 
 namespace cet {
-  void split_path(std::string const& path,
-                  std::vector<std::string>& components);
+  [[deprecated("use cet::split_search_path()")]] void split_path(
+    std::string const& path,
+    std::vector<std::string>& components);
 }
 
 // ======================================================================

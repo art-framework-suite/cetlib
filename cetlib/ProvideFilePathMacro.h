@@ -10,13 +10,15 @@
 #include "cetlib/compiler_macros.h"
 #include "cetlib/detail/provide_file_path.h"
 
+#include <source_location>
 #include <string>
 
 #define CET_PROVIDE_FILE_PATH()                                                \
   EXTERN_C_FUNC_DECLARE_START                                                  \
   std::string get_source_location()                                            \
   {                                                                            \
-    return cet::detail::provide_file_path(__FILE__);                           \
+    return cet::detail::provide_file_path(                                     \
+      std::source_location::current().file_name());                            \
   }                                                                            \
   EXTERN_C_FUNC_DECLARE_END
 
