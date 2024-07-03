@@ -37,7 +37,6 @@ cet_make_library(HEADERS_TARGET
     crc32.cc
     detail/ostream_handle_impl.cc
     detail/provide_file_path.cc
-    detail/plugin_search_path.cc
     detail/wrapLibraryManagerException.cc
     filepath_maker.cc
     filesystem.cc

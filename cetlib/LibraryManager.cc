@@ -1,7 +1,6 @@
 #include "cetlib/LibraryManager.h"
 
 #include "cetlib/container_algorithms.h"
-#include "cetlib/detail/plugin_search_path.h"
 #include "cetlib/plugin_libpath.h"
 #include "cetlib/search_path.h"
 #include "cetlib/shlib_utils.h"
@@ -39,7 +38,7 @@ cet::LibraryManager::LibraryManager(search_path search_path,
 cet::LibraryManager::LibraryManager(search_path search_path,
                                     std::string lib_type,
                                     std::string pattern)
-  : search_path_{detail::plugin_search_path(std::move(search_path))}
+  : search_path_{std::move(search_path)}
   , lib_type_{std::move(lib_type)}
   , pattern_stem_{std::move(pattern)}
 {

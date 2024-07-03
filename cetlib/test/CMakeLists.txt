@@ -132,8 +132,6 @@ endif()
 
 ####################################
 # Test plugin machinery.
-cet_test(plugin_search_path_t USE_CATCH2_MAIN LIBRARIES PRIVATE cetlib::cetlib)
-
 cet_make_library(LIBRARY_NAME cetlib_test_fakePlugin SOURCE moduleType.cc NO_INSTALL)
 cet_make_library(LIBRARY_NAME cetlib_test_TestPluginBase SOURCE TestPluginBase.cc NO_INSTALL
   LIBRARIES PRIVATE art_plugin_support::support_macros)
@@ -208,7 +206,6 @@ target_compile_definitions(regex_standalone_t PRIVATE STANDALONE_TEST)
 # Catch2 unit tests
 
 cet_test(getenv_test USE_CATCH2_MAIN LIBRARIES PRIVATE cetlib::cetlib)
-cet_test(os_libpath_t USE_CATCH2_MAIN)
 cet_test(search_path_test USE_CATCH2_MAIN TEST_PROPERTIES ENVIRONMENT xyzzy=""
          LIBRARIES PRIVATE cetlib::cetlib)
 cet_test(canonical_number_test USE_CATCH2_MAIN
