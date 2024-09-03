@@ -65,8 +65,7 @@ namespace cet::sqlite {
                        sqlite3_stmt*& insertStmt);
 
   private:
-    template <typename DatabaseOpenPolicy>
-      requires detail::valid_policy<DatabaseOpenPolicy>
+    template <detail::valid_policy DatabaseOpenPolicy>
     explicit Connection(std::string const& filename,
                         std::shared_ptr<std::recursive_mutex>,
                         DatabaseOpenPolicy);
