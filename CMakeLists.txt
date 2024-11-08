@@ -1,7 +1,11 @@
 cmake_minimum_required(VERSION 3.19 FATAL_ERROR)
 
-find_package(cetmodules 3.23.01 REQUIRED)
-project(cetlib VERSION 3.19.00 LANGUAGES CXX C)
+find_package(cetmodules 3.27.01 REQUIRED) # Fixed `COMPILE_ONLY` tests
+project(cetlib LANGUAGES CXX C)
+
+# Version handling.
+include(CetSetVersionFromFile)
+cet_set_version_from_file(EXTENDED_VERSION_SEMANTICS)
 
 include(CetCMakeEnv)
 cet_cmake_env()
@@ -32,6 +36,7 @@ endif()
 
 cet_report_compiler_flags(REPORT_THRESHOLD VERBOSE)
 
+add_subdirectory(libexec)
 add_subdirectory(${PROJECT_NAME})  # source code
 add_subdirectory(config) # Files for use by other packages at build time.
 add_subdirectory(perllib) # Modular plugin skeleton generator
