@@ -41,4 +41,4 @@ add_subdirectory(${PROJECT_NAME})  # source code
 add_subdirectory(config) # Files for use by other packages at build time.
 add_subdirectory(perllib) # Modular plugin skeleton generator
 
-cet_cmake_config(CONFIG_POST_TARGET_VARS config/cetlib-augment-CETLIB.cmake)
+cet_cmake_config()
