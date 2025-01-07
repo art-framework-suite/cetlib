@@ -217,9 +217,12 @@ cet_test(crc32_test USE_CATCH2_MAIN
 
 # Use ParseAndAddCatchTests to generate a test for each test case.
 cet_make_exec(NAME hypot_test USE_CATCH2_MAIN NO_INSTALL)
-include(ParseAndAddCatchTests)
 set(AdditionalCatchParameters -s)
-ParseAndAddCatchTests(hypot_test)
+include(Catch)
+catch_discover_tests(hypot_test
+  TEST_PREFIX hypot_test::
+  PROPERTIES LABELS DEFAULT LABELS RELEASE LABELS hypot_test
+)
 
 foreach(compile_test IN ITEMS
     bad_hard_cast_t bad_copy_all_t bad_for_all_container_t bad_for_all_func_t bad_pow_t bad_search_path_t bad_lib_manager_t bad_bit_manipulation_t)
