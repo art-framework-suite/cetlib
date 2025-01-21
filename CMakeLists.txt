@@ -5,9 +5,13 @@ project(cetlib LANGUAGES CXX C)
 
 # Version handling.
 include(CetSetVersionFromFile)
+
 cet_set_version_from_file(EXTENDED_VERSION_SEMANTICS)
 
 include(CetCMakeEnv)
+include(SetCompilerFlags)
+include(CetCMakeConfig)
+
 cet_cmake_env()
 
 cet_set_compiler_flags(DIAGS VIGILANT DWARF_VER 4
