@@ -1,3 +1,6 @@
+include(ProjectVariable)
+include(CetCopy)
+
 project_variable(CONFIG_DIR config CONFIG
   DOCSTRING "Directory containing config files provided by ${PROJECT_NAME}")
 

@@ -5,6 +5,10 @@
 # ======================================================================
 
 include(CetMake)
+include(CetMakeLibrary)
+include(CetRegisterExportSet)
+include(InstallHeaders)
+include(InstallSource)
 
 find_package(cetlib_except REQUIRED EXPORT)
 

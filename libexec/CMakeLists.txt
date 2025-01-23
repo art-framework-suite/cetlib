@@ -1,3 +1,6 @@
+include(ProjectVariable)
+include(CetMake)
+
 project_variable(LIBEXEC_DIR ${CMAKE_INSTALL_LIBEXECDIR})
 if (cetmodules_IN_TREE AND TARGET cetmodules::filter-output)
   set(only_qual ONLY_QUALIFIED_TARGET)

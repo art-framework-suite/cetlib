@@ -215,7 +215,7 @@ cet_test(crc32_test USE_CATCH2_MAIN
          TEST_ARGS -s
          LIBRARIES PRIVATE cetlib::cetlib)
 
-# Use ParseAndAddCatchTests to generate a test for each test case.
+# Use catch_discover_tests() to generate a test for each test case.
 cet_make_exec(NAME hypot_test USE_CATCH2_MAIN NO_INSTALL)
 set(AdditionalCatchParameters -s)
 include(Catch)
