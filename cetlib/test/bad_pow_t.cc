@@ -3,7 +3,7 @@
 
 struct bad_data {
   std::string identifier;
-  constexpr banana() : name("something"){};
+  constexpr banana() : name("something") {};
 };
 
 int

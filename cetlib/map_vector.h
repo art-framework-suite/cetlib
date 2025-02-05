@@ -102,7 +102,7 @@ public:
   using const_pointer =
     typename std::allocator_traits<allocator_type>::const_pointer;
   using reference = value_type&;
-  using const_reference = const value_type&;
+  using const_reference = value_type const&;
 
   // c'tors:
   map_vector() = default;

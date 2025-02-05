@@ -44,14 +44,14 @@ namespace fhicl {
     /*
      *  Provide input to SHA1
      */
-    void Input(const unsigned char* message_array, unsigned length);
-    void Input(const char* message_array, unsigned length);
+    void Input(unsigned char const* message_array, unsigned length);
+    void Input(char const* message_array, unsigned length);
     void Input(unsigned char message_element);
     void Input(char message_element);
-    SHA1& operator<<(const char* message_array);
-    SHA1& operator<<(const unsigned char* message_array);
-    SHA1& operator<<(const char message_element);
-    SHA1& operator<<(const unsigned char message_element);
+    SHA1& operator<<(char const* message_array);
+    SHA1& operator<<(unsigned char const* message_array);
+    SHA1& operator<<(char const message_element);
+    SHA1& operator<<(unsigned char const message_element);
 
   private:
     /*

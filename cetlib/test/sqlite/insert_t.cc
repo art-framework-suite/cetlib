@@ -23,7 +23,7 @@ test_value_string_construction()
 void
 test_insertion()
 {
-  const char* fname{"created_by_insert_t.db"};
+  char const* fname{"created_by_insert_t.db"};
   remove(fname);
 
   // Create an empty database with a tiny maximum page count.

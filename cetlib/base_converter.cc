@@ -15,28 +15,28 @@ base_converter::base_converter(std::string const& sourceBaseSet,
 std::string
 base_converter::dec_to_bin(std::string value)
 {
-  static const base_converter dec2bin{decimal_set(), binary_set()};
+  static base_converter const dec2bin{decimal_set(), binary_set()};
   return dec2bin.convert(value);
 }
 
 std::string
 base_converter::bin_to_dec(std::string value)
 {
-  static const base_converter bin2dec{binary_set(), decimal_set()};
+  static base_converter const bin2dec{binary_set(), decimal_set()};
   return bin2dec.convert(value);
 }
 
 std::string
 base_converter::dec_to_hex(std::string value)
 {
-  static const base_converter dec2hex{decimal_set(), hex_set()};
+  static base_converter const dec2hex{decimal_set(), hex_set()};
   return dec2hex.convert(value);
 }
 
 std::string
 base_converter::hex_to_dec(std::string value)
 {
-  static const base_converter hex2dec{hex_set(), decimal_set()};
+  static base_converter const hex2dec{hex_set(), decimal_set()};
   return hex2dec.convert(value);
 }
 

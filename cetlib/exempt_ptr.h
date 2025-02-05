@@ -153,7 +153,11 @@ public:
   {
     return get() == nullptr;
   }
-  constexpr explicit operator bool() const noexcept { return !empty(); }
+  constexpr explicit
+  operator bool() const noexcept
+  {
+    return !empty();
+  }
 
   // modifiers:
   constexpr pointer

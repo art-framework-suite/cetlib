@@ -32,10 +32,8 @@ namespace cet::sqlite {
   namespace detail {
     template <typename Policy>
     concept valid_policy = requires(Policy p, std::string arg) {
-                             {
-                               p.open(arg)
-                               } -> std::same_as<sqlite3*>;
-                           };
+      { p.open(arg) } -> std::same_as<sqlite3*>;
+    };
   }
 
   class Connection {

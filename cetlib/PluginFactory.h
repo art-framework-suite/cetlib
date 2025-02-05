@@ -57,8 +57,8 @@ public:
   // specified name and type. Use "nothrow" to select the non-throwing
   // version of the function.
   template <typename RESULT_TYPE, typename... ARGS>
-  auto find(std::string const& funcname, std::string const& libspec) const
-    -> RESULT_TYPE (*)(ARGS...);
+  auto find(std::string const& funcname,
+            std::string const& libspec) const -> RESULT_TYPE (*)(ARGS...);
 
   template <typename RESULT_TYPE, typename... ARGS>
   auto find(std::string const& funcname,

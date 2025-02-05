@@ -80,8 +80,8 @@ namespace cet {
     struct default_action;
 
     template <typename Element>
-    concept PolymorphicWithClone = (std::is_polymorphic_v<Element> &&
-                                    has_clone<Element>::value);
+    concept PolymorphicWithClone =
+      (std::is_polymorphic_v<Element> && has_clone<Element>::value);
 
     template <typename Element>
     struct default_action : public default_copy<Element> {
@@ -94,9 +94,9 @@ namespace cet {
     };
 
     template <typename Element, typename Cloner, typename E2>
-    concept WouldSlice = std::is_polymorphic_v<E2> &&
-                         (!std::is_same_v<Element, E2>) &&
-                         std::is_base_of_v<default_copy<Element>, Cloner>;
+    concept WouldSlice =
+      std::is_polymorphic_v<E2> && (!std::is_same_v<Element, E2>) &&
+      std::is_base_of_v<default_copy<Element>, Cloner>;
 
   }
 
@@ -293,7 +293,11 @@ public:
     return p;
   }
 
-  explicit operator bool() const noexcept { return get(); }
+  explicit
+  operator bool() const noexcept
+  {
+    return get();
+  }
 
   // modifiers:
   pointer

@@ -59,7 +59,11 @@ public:
   {
     return ptr_;
   }
-  explicit operator bool() const noexcept { return isValid(); }
+  explicit
+  operator bool() const noexcept
+  {
+    return isValid();
+  }
 
   void
   reseat() noexcept

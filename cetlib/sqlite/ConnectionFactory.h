@@ -44,8 +44,8 @@ namespace cet::sqlite {
   public:
     template <typename DatabaseOpenPolicy = detail::DefaultDatabaseOpenPolicy,
               typename... PolicyArgs>
-    auto make_connection(std::string const& file_name, PolicyArgs&&...)
-      -> std::unique_ptr<Connection>;
+    auto make_connection(std::string const& file_name,
+                         PolicyArgs&&...) -> std::unique_ptr<Connection>;
 
   private:
     std::unordered_map<std::string, std::weak_ptr<std::recursive_mutex>>

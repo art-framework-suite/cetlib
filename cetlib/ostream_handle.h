@@ -78,7 +78,11 @@ namespace cet {
     {
       osh_->stream().flush();
     }
-    explicit operator bool() const { return static_cast<bool>(osh_->stream()); }
+    explicit
+    operator bool() const
+    {
+      return static_cast<bool>(osh_->stream());
+    }
     operator std::ostream&() { return osh_->stream(); }
 
   private:

@@ -8,7 +8,7 @@ namespace cet {
     MD5Result const&
     invalidResult()
     {
-      static const MD5Result val;
+      static MD5Result const val;
       return val;
     }
   }
@@ -73,7 +73,7 @@ namespace cet {
     // This is somewhat dangerous, because the conversion of 'unsigned
     // char' to 'char' may be undefined if 'char' is a signed type
     // (4.7p3 in the Standard).
-    const char* p = reinterpret_cast<const char*>(&bytes[0]);
+    char const* p = reinterpret_cast<char const*>(&bytes[0]);
     return std::string(p, p + sizeof(bytes));
   }
 

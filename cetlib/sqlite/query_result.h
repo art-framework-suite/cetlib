@@ -90,7 +90,11 @@ namespace cet::sqlite {
       return data.size();
     }
 
-    explicit operator bool() const { return !empty(); }
+    explicit
+    operator bool() const
+    {
+      return !empty();
+    }
 
     std::vector<std::string> columns;
     std::vector<std::tuple<Args...>> data;

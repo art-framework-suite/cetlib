@@ -21,10 +21,8 @@ namespace cet {
     // the same type as K.
     template <class K, class V>
     concept has_id = requires(V val) {
-                       {
-                         val.id()
-                         } -> std::same_as<K>;
-                     };
+      { val.id() } -> std::same_as<K>;
+    };
   }
   template <class K, class V>
   class registry_via_id;
@@ -154,8 +152,10 @@ cet::registry_via_id<K, V>::put(V const& value)
 template <class K, class V>
 template <class FwdIt>
 inline auto
-cet::registry_via_id<K, V>::put(FwdIt b, FwdIt e) -> std::enable_if_t<
-  std::is_same_v<typename std::iterator_traits<FwdIt>::value_type, mapped_type>>
+cet::registry_via_id<K, V>::put(FwdIt b, FwdIt e)
+  -> std::enable_if_t<
+    std::is_same_v<typename std::iterator_traits<FwdIt>::value_type,
+                   mapped_type>>
 {
   for (; b != e; ++b)
     put(*b);
@@ -165,8 +165,10 @@ cet::registry_via_id<K, V>::put(FwdIt b, FwdIt e) -> std::enable_if_t<
 template <class K, class V>
 template <class FwdIt>
 inline auto
-cet::registry_via_id<K, V>::put(FwdIt b, FwdIt e) -> std::enable_if_t<
-  std::is_same_v<typename std::iterator_traits<FwdIt>::value_type, value_type>>
+cet::registry_via_id<K, V>::put(FwdIt b, FwdIt e)
+  -> std::enable_if_t<
+    std::is_same_v<typename std::iterator_traits<FwdIt>::value_type,
+                   value_type>>
 {
   the_registry_().insert(b, e);
 }

@@ -35,7 +35,8 @@ namespace cet {
 
 template <class T>
   requires(cet::detail::is_arithmetic<T>)
-inline T cet::unchecked_hypot(T x, T y)
+inline T
+cet::unchecked_hypot(T x, T y)
 {
   return std::hypot(x, y);
 }
@@ -45,7 +46,8 @@ inline T cet::unchecked_hypot(T x, T y)
 
 template <class T>
   requires(cet::detail::is_arithmetic<T>)
-T cet::checked_hypot(T x, T y)
+T
+cet::checked_hypot(T x, T y)
 {
 
   if (std::isinf(x) || std::isinf(y))
@@ -62,7 +64,8 @@ T cet::checked_hypot(T x, T y)
 
 template <class T>
   requires(cet::detail::is_arithmetic<T>)
-inline T cet::hypot(T x, T y)
+inline T
+cet::hypot(T x, T y)
 {
   return checked_hypot(x, y);
 }
