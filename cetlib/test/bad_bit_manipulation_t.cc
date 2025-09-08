@@ -1,7 +1,9 @@
 #include "cetlib/bit_manipulation.h"
 
+#include <utility>
+
 int
 main()
 {
-  (void)cet::bit_size_v<int>;
+  std::ignore = cet::bit_size_v<int>;
 }

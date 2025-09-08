@@ -1,9 +1,11 @@
 #include "cetlib/sqlite/select.h"
 
+#include <utility>
+
 struct not_stringish {};
 
 int
 main()
 {
-  (void)cet::sqlite::select(not_stringish{});
+  std::ignore = cet::sqlite::select(not_stringish{});
 }
